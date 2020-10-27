@@ -8,7 +8,7 @@ import "./lib/StringUtils.sol";
 
 contract PricesContract {
     
-    int256 constant sampleSize = 100;
+    int256 constant sampleSize = 10;
     int256 constant multiplier = 1e6;
     
     using SignedSafeMath for uint256;
