@@ -40,6 +40,8 @@ contract PricesContract {
         public 
     {
         
+        price = price.mul(multiplier);
+        
         bytes32 tagBytes32 = tag.stringToBytes32();
       
         prices[tagBytes32].total = prices[tagBytes32].total.add(price);
@@ -72,13 +74,15 @@ contract PricesContract {
             
             prices[tagBytes32].average = prices[tagBytes32].average.add(
                 (
-                    (int256(price)).sub(prices[tagBytes32].average)
-                ).div(sampleSize)
+                    (
+                        (int256(price)).sub(prices[tagBytes32].average)
+                    ).div(sampleSize)
+                )
             );
             
             prices[tagBytes32].median = prices[tagBytes32].median.add(
                 copysign( 
-                    prices[tagBytes32].average.div((sampleSize.mul(sampleSize))), 
+                    prices[tagBytes32].average.div(sampleSize.mul(sampleSize)), 
                     int256(price).sub(prices[tagBytes32].median)
                 )
             );
@@ -88,7 +92,12 @@ contract PricesContract {
             // self.variance += (new-old)*(new-newavg+old-oldavg)/(self.N-1)
             prices[tagBytes32].variance = prices[tagBytes32].variance.add(
                 (
-                    (price.sub(prices[tagBytes32].prevPrice)).mul(price.sub(prices[tagBytes32].average).add(prices[tagBytes32].prevPrice).sub(oldAverage))
+                    (
+                        price.sub(prices[tagBytes32].prevPrice)
+                    ).mul(
+                        price.sub(prices[tagBytes32].average)
+                             .add(prices[tagBytes32].prevPrice)
+                             .sub(oldAverage))
                 ).div(
                     sampleSize.sub(int256(1))
                     )
@@ -109,10 +118,10 @@ contract PricesContract {
     function viewData(string memory tag) public view returns(int256 total,int256 average, int256 median, int256 variance) {
         bytes32 tagBytes32 = tag.stringToBytes32();
         
-        total = prices[tagBytes32].total;
-        average = prices[tagBytes32].average;
-        median = prices[tagBytes32].median;
-        variance = prices[tagBytes32].variance;
+        total = prices[tagBytes32].total.div(multiplier);
+        average = prices[tagBytes32].average.div(multiplier);
+        median = prices[tagBytes32].median.div(multiplier);
+        variance = prices[tagBytes32].variance.div(multiplier).div(multiplier);
         
     }
     
