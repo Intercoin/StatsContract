@@ -1,10 +1,13 @@
 pragma solidity >=0.6.0 <0.7.0;
+pragma experimental ABIEncoderV2;
 
 import "./openzeppelin-contracts/contracts/math/SignedSafeMath.sol";
 import "./openzeppelin-contracts/contracts/math/SafeMath.sol";
 import "./openzeppelin-contracts/contracts/utils/EnumerableMap.sol";
 //import "./openzeppelin-contracts/contracts/access/Ownable.sol";
 import "./lib/StringUtils.sol";
+
+import "./ICommunity.sol";
 
 contract PricesContract {
     
@@ -24,10 +27,37 @@ contract PricesContract {
         int256 variance;
         
         int256 prevPrice;
+        
+        bool alreadyInit;
     }
     
-    bool alreadyInit = false;
+    ICommunity private communityAddress;
+    string private communityRole;
     mapping(bytes32 => PriceStruct) prices;
+    
+    modifier canRecord() {
+        bool s = false;
+        string[] memory roles = ICommunity(communityAddress).getRoles(msg.sender);
+        for (uint256 i=0; i< roles.length; i++) {
+            
+            if (keccak256(abi.encodePacked(communityRole)) == keccak256(abi.encodePacked(roles[i]))) {
+                s = true;
+            }
+        }
+        require(s == true, "Sender has not in accessible List");
+        _;
+    }
+    
+    constructor(
+        ICommunity community,
+        string memory roleName
+        
+    )
+        public
+    {
+        communityAddress = community;
+        communityRole = roleName;
+    }
     
     /**
      * @param tag tag name
@@ -37,8 +67,10 @@ contract PricesContract {
         string memory tag, 
         int256 price
     ) 
-        public 
+        public
+        canRecord()
     {
+        require(price>0, 'can not be negative'); 
         
         price = price.mul(multiplier);
         
@@ -46,32 +78,19 @@ contract PricesContract {
       
         prices[tagBytes32].total = prices[tagBytes32].total.add(price);
         
-        /*
-        // https://stackoverflow.com/questions/10930732/c-efficiently-calculating-a-running-median/15150143#15150143// for each sample
-        // average += ( sample - average ) * 0.1f; // rough running average.
-        // median += _copysign( average * 0.01, sample - median );
-        prices[tagBytes32].average = prices[tagBytes32].average.add(
-            (
-                (int256(price)).sub(prices[tagBytes32].average)
-            ).div(1e1)
-        );
-        prices[tagBytes32].median = prices[tagBytes32].median.add(
-                copysign( 
-                    prices[tagBytes32].average.div(1e2), 
-                    int256(price).sub(prices[tagBytes32].median)
-                )
-            );
-        */
-        
-        
-        if (alreadyInit == false) {
-            alreadyInit = true;
+        if (prices[tagBytes32].alreadyInit == false) {
+            prices[tagBytes32].alreadyInit = true;
             prices[tagBytes32].average = price;
             prices[tagBytes32].median = price;
             prices[tagBytes32].prevPrice = price;
         } else {
             int256 oldAverage = prices[tagBytes32].average;
             
+            // https://stackoverflow.com/questions/10930732/c-efficiently-calculating-a-running-median/15150143#15150143
+            // for each sample
+            // average += ( sample - average ) * 0.1f; // rough running average.
+            // median += _copysign( average * 0.01, sample - median );
+            // but "0.1f" replace to "sampleSize"
             prices[tagBytes32].average = prices[tagBytes32].average.add(
                 (
                     (
@@ -121,7 +140,7 @@ contract PricesContract {
         total = prices[tagBytes32].total.div(multiplier);
         average = prices[tagBytes32].average.div(multiplier);
         median = prices[tagBytes32].median.div(multiplier);
-        variance = prices[tagBytes32].variance.div(multiplier).div(multiplier);
+        variance = prices[tagBytes32].variance.div(multiplier);
         
     }
     
