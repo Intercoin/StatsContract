@@ -33,3 +33,18 @@ name  | type | description
 --|--|--
 tag|string|tag name
 
+#### addVendorTag 
+
+Params:
+name  | type | description
+--|--|--
+vendor|address| address of vendor
+tag|string|tag name
+
+#### removeVendorTag
+
+Params:
+name  | type | description
+--|--|--
+vendor|address| address of vendor
+        
