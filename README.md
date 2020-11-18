@@ -1,5 +1,6 @@
-# PricesContract
-Used to compute total, average and median prices for transactions across various economic categories
+# StatsContract
+Used to compute total, count and averages from incoming input across various categories and tags
+
 # Deploy
 when deploy it is need to pass parameters in to constructor
 
