@@ -1,5 +1,6 @@
 # StatsContract
-Used to compute average prices for transactions across various economic categories
+Used to compute sums, counts and averages from incoming input across various categories and tags
+
 # Deploy
 when deploy it is not need to pass parameters in to constructor
 But after need to run method init() because contract is upgradable
@@ -45,5 +46,3 @@ Params:
 name  | type | description
 --|--|--
 period|uint256| period in seconds enum(86400,604800,2592000,31536000) ie STATS_DAY,STATS_WEEK,STATS_MONTH,STATS_YEAR
-
-        
