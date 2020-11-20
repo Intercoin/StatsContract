@@ -1,50 +1,49 @@
-# PricesContract
-Used to compute total, average and median prices for transactions across various economic categories
+# StatsContract
+Used to compute average prices for transactions across various economic categories
 # Deploy
-when deploy it is need to pass parameters in to constructor
-
-Params:
-name  | type | description
---|--|--
-community|address|address of community contract
-roleName|string|community role of participants which allowance to put records
+when deploy it is not need to pass parameters in to constructor
+But after need to run method init() because contract is upgradable
 
 # Overview
 once installed will be use methods:
 
 ## Methods
 
+#### init
+need to run after deploy
+
+#### updateStat
+actualize stats if want not nothing to send
+
+Params:
+name  | type | description
+--|--|--
+tag|bytes32|tag name
+
 #### record
-put price with some tag 
+send stats data 
+Params:
+name  | type | description
+--|--|--
+tag|bytes32|tag name
+price|uint256|price
+
+Note that all prices can be multiplied to some fraction to avoid zeros of integer type
+
+#### avgByTag
+return average by tag name and period
 
 Params:
 name  | type | description
 --|--|--
 tag|string|tag name
-price|int256|price
+period|uint256| period in seconds enum(86400,604800,2592000,31536000) ie STATS_DAY,STATS_WEEK,STATS_MONTH,STATS_YEAR
 
-Note that all prices must be multiplied to some fraction to avoid zeros of integer type
-
-#### viewData
-return total/median/average/variance by tag name
+#### avgSumByAllTags 
 
 Params:
 name  | type | description
 --|--|--
-tag|string|tag name
+period|uint256| period in seconds enum(86400,604800,2592000,31536000) ie STATS_DAY,STATS_WEEK,STATS_MONTH,STATS_YEAR
 
-#### addVendorTag 
-
-Params:
-name  | type | description
---|--|--
-vendor|address| address of vendor
-tag|string|tag name
-
-#### removeVendorTag
-
-Params:
-name  | type | description
---|--|--
-vendor|address| address of vendor
         

@@ -1,8 +1,7 @@
-// SPDX-License-Identifier: MIT
-
 pragma solidity ^0.6.0;
 
 import "../GSN/Context.sol";
+import "../Initializable.sol";
 /**
  * @dev Contract module which provides a basic access control mechanism, where
  * there is an account (an owner) that can be granted exclusive access to
@@ -15,7 +14,7 @@ import "../GSN/Context.sol";
  * `onlyOwner`, which can be applied to your functions to restrict their use to
  * the owner.
  */
-contract Ownable is Context {
+contract OwnableUpgradeSafe is Initializable, ContextUpgradeSafe {
     address private _owner;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -23,11 +22,21 @@ contract Ownable is Context {
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
-    constructor () internal {
+
+    function __Ownable_init() internal initializer {
+        __Context_init_unchained();
+        __Ownable_init_unchained();
+    }
+
+    function __Ownable_init_unchained() internal initializer {
+
+
         address msgSender = _msgSender();
         _owner = msgSender;
         emit OwnershipTransferred(address(0), msgSender);
+
     }
+
 
     /**
      * @dev Returns the address of the current owner.
@@ -65,4 +74,6 @@ contract Ownable is Context {
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
     }
+
+    uint256[49] private __gap;
 }
