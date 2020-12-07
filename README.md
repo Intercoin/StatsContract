@@ -7,11 +7,54 @@ But after need to run method init() because contract is upgradable
 
 # Overview
 once installed will be use methods:
+<table>
+<thead>
+	<tr>
+		<th>method name</th>
+		<th>called by</th>
+		<th>description</th>
+	</tr>
+</thead>
+<tbody>
+    <tr>
+		<td><a href="#init">init</a></td>
+		<td>anyone</td>
+		<td>need to initialize after contract deploy</td>
+	</tr>
+	<tr>
+		<td><a href="#updatestat">updateStat</a></td>
+		<td>only which rolew specified at Community Contract</td>
+		<td>actualize stats if want nothing to send</td>
+	</tr>
+    <tr>
+		<td><a href="#record">record</a></td>
+		<td>only which rolew specified at Community Contract</td>
+		<td>Method reciev stats data</td>
+	</tr>
+	<tr>
+		<td><a href="#avgbytag">avgByTag</a></td>
+		<td>anyone</td>
+		<td>return average by tag name and period</td>
+	</tr>
+	<tr>
+		<td><a href="#avgsumbyalltags">avgSumByAllTags</a></td>
+		<td>anyone</td>
+		<td>return average by all tags name and period</td>
+	</tr>
+</tbody>
+</table>
+
 
 ## Methods
 
 #### init
 need to run after deploy
+
+Params:
+name  | type | description
+--|--|--
+community|address|address of community
+roleName|string|role name which specified to send stats data
 
 #### updateStat
 actualize stats if want not nothing to send

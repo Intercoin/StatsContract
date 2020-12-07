@@ -9,20 +9,30 @@ contract StatsFactory {
         implementationContract = new Stats();
     }
   
-    function produce() public returns (Stats){
+    function produce(
+        ICommunity community,
+        string memory roleName
+    ) 
+        public 
+        returns (Stats)
+    {
     
         Stats proxy = Stats(
             createClone(address(implementationContract))
         );
         
-        proxy.init();
+        proxy.init(community, roleName);
         proxy.transferOwnership(msg.sender);
         emit Produced(proxy);
         return proxy;
     }
   
-  
-    function createClone(address target) internal returns (address result) {
+    function createClone(
+        address target
+    )
+        internal 
+        returns (address result) 
+    {
         bytes20 targetBytes = bytes20(target);
         assembly {
             let clone := mload(0x40)

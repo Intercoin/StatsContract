@@ -1,8 +1,10 @@
 pragma solidity >=0.6.0 <0.7.0;
 pragma experimental ABIEncoderV2;
 
-interface Fabric {
-    function produce() external returns(Stats);
+import "../ICommunity.sol";
+
+interface Factory {
+    function produce(ICommunity community,string calldata roleName) external returns(Stats);
 }
 interface Stats {
     function updateStat(bytes32 tag) external;
@@ -13,16 +15,34 @@ interface Stats {
 
 contract SomeExternalMock {
      
-    Fabric fabricAddress;
+    Factory factoryAddress;
     Stats private statsAddr;
-    constructor(Fabric addr) public {
-        fabricAddress = addr;
+    constructor(
+        Factory addr,
+        ICommunity community,
+        string memory roleName
+    ) 
+        public 
+    {
+        factoryAddress = addr;
         
-        statsAddr = fabricAddress.produce();
+        statsAddr = factoryAddress.produce(
+            community,
+            roleName
+        );
     }
     
-    function getExtraStat() public returns(Stats) {
-        return fabricAddress.produce();
+    function getExtraStat(
+        ICommunity community,
+        string memory roleName
+    ) 
+        public 
+        returns(Stats) 
+    {
+        return factoryAddress.produce(
+            community,
+            roleName
+        );
     }
     
     function getStatsAddr() public view returns(Stats) {

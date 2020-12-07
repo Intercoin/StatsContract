@@ -4,6 +4,7 @@ const StatsMock = artifacts.require("StatsMock");
 const StatsFactoryMock = artifacts.require("StatsFactoryMock");
 const SomeExternalMock = artifacts.require("SomeExternalMock");
 const SomeExternalMock2 = artifacts.require("SomeExternalMock2");
+const CommunityMock = artifacts.require("CommunityMock");
 
 const truffleAssert = require('truffle-assertions');
 const helper = require("../helpers/truffleTestHelper");
@@ -30,6 +31,7 @@ contract('Stats', (accounts) => {
     const accountEleven = accounts[10];
     const accountTwelwe = accounts[11];
 
+    
     function randomIntFromInterval(min, max) { // min and max included
       return Math.floor(Math.random() * (max - min + 1) + min);
     }
@@ -45,13 +47,16 @@ contract('Stats', (accounts) => {
     var PERIOD_WEEK = 604800;
     var PERIOD_MONTH = 2592000;
     var PERIOD_YEAR = 31536000;
+    var membersRole = 'members';
+    var membersRoleWrong = 'wrong-role';
+    
     
     
     it('tests math', async () => {
         
+        const CommunityMockInstance = await CommunityMock.new();
         var StatsInstance = await StatsMock.new({from: accountTen});
-        
-        await StatsInstance.init({from: accountTen});
+        await StatsInstance.init(CommunityMockInstance.address, membersRole, {from: accountTen});
 
         tmp_total=0; tmp_count=0;
         for(var i=1;i<10;i++) {
@@ -113,11 +118,15 @@ contract('Stats', (accounts) => {
     }); 
     
     it('tests with factory', async () => {
+        const CommunityMockInstance = await CommunityMock.new();
         // create factory
         var StatsFactoryMockInstance = await StatsFactoryMock.new({from: accountTen});
         
+        //    CommunityMockInstance.address, membersRole,
+        
+        
         // create some external contract. imitation our CurrencyContract
-        var SomeExternalMockInstance = await SomeExternalMock.new(StatsFactoryMockInstance.address, {from: accountNine});
+        var SomeExternalMockInstance = await SomeExternalMock.new(StatsFactoryMockInstance.address, CommunityMockInstance.address, membersRole, {from: accountNine});
         
         // put through SomeExternalMock into Stats some values from 1 to 9
         await SomeExternalMockInstance.push1_10_values(tag1, {from: accountNine});
@@ -136,11 +145,7 @@ contract('Stats', (accounts) => {
         // create some another external contract. imitation our CurrencyContract
         var SomeExternalMock2Instance = await SomeExternalMock2.new(statAddr, {from: accountEight});
         
-        await truffleAssert.reverts(
-            SomeExternalMock2Instance.push_some_values(tag1, {from: accountThree}),
-            "Ownable: caller is not the owner"
-        );
-        
+       
         // but can be able get statistic
         var tmp = await SomeExternalMock2Instance.avgByTag(PERIOD_DAY,tag1);
         assert.equal(

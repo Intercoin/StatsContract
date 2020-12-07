@@ -1,24 +1,16 @@
-pragma solidity >=0.6.0 <0.7.0;
+// SPDX-License-Identifier: MITpragma solidity >=0.6.0 <0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "./openzeppelin-contracts/contracts/access/Ownable.sol";
-import "./openzeppelin-contracts/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import "./ICommunity.sol";
 
 contract Stats is OwnableUpgradeSafe {
     using SafeMath for uint256;
     
     uint256[] internal periods;
     
-    function  init() public initializer {
-        __Ownable_init();
-        periods.push(86400);    // STATS_DAY    24*60*60
-        periods.push(604800);   // STATS_WEEK   7*24*60*60
-        periods.push(2592000);  // STATS_MONTH  30*24*60*60
-        periods.push(31536000); // STATS_YEAR   365*24*60*60
-        dataIndex = 1;
-        tagsIndex = 1;
-    }
-    
+   
     uint256 private tagsIndex;
     mapping (bytes32 => uint256) internal _tags;
     mapping (uint256 => bytes32) internal _tagsIndices;
@@ -41,7 +33,51 @@ contract Stats is OwnableUpgradeSafe {
     //       period             tag
     mapping (uint256 => mapping(bytes32 => Data)) stats;
 
-    function updateStat(bytes32 tag) public onlyOwner {
+    ICommunity private communityAddress;
+    string private communityRole;
+    
+    
+    /**
+     * @param community address of CommunityContract
+     * @param roleName whitelist role name
+     */
+    function init(
+        ICommunity community,
+        string memory roleName
+    ) 
+        public 
+        initializer 
+    {
+        __Ownable_init();
+        
+        communityAddress = community;
+        communityRole = roleName;
+        
+        periods.push(86400);    // STATS_DAY    24*60*60
+        periods.push(604800);   // STATS_WEEK   7*24*60*60
+        periods.push(2592000);  // STATS_MONTH  30*24*60*60
+        periods.push(31536000); // STATS_YEAR   365*24*60*60
+        dataIndex = 1;
+        tagsIndex = 1;
+    }
+    
+    modifier canSendStats() {
+        bool s = false;
+        string[] memory roles = ICommunity(communityAddress).getRoles(msg.sender);
+        for (uint256 i=0; i< roles.length; i++) {
+            
+            if (keccak256(abi.encodePacked(communityRole)) == keccak256(abi.encodePacked(roles[i]))) {
+                s = true;
+            }
+        }
+        
+        require(s == true, "Sender is not in whitelist");
+        
+        _;
+    }
+    
+    
+    function updateStat(bytes32 tag) public canSendStats {
 
         createTag(tag);
         for(uint256 i=0; i<periods.length; i++) {
@@ -53,7 +89,7 @@ contract Stats is OwnableUpgradeSafe {
      * @param tag tagname
      * @param value price,fraction etc
      */
-    function record(bytes32 tag, uint256 value) public onlyOwner {
+    function record(bytes32 tag, uint256 value) public canSendStats {
         createTag(tag);
         
         data[dataIndex].value = value;
