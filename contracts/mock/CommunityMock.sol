@@ -1,7 +1,8 @@
 pragma solidity >=0.6.0 <0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../ICommunity.sol";
+import "../interfaces/ICommunity.sol";
+
 
 contract CommunityMock is ICommunity {
     uint256 count = 5;

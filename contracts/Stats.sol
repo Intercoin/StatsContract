@@ -1,9 +1,10 @@
-// SPDX-License-Identifier: MITpragma solidity >=0.6.0 <0.7.0;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.6.0 <0.7.0;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "./ICommunity.sol";
+import "./interfaces/ICommunity.sol";
 
 contract Stats is OwnableUpgradeSafe {
     using SafeMath for uint256;

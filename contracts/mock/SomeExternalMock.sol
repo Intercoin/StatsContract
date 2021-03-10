@@ -1,22 +1,18 @@
 pragma solidity >=0.6.0 <0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../ICommunity.sol";
+import "../interfaces/ICommunity.sol";
+import "../interfaces/iStats.sol";
 
 interface Factory {
-    function produce(ICommunity community,string calldata roleName) external returns(Stats);
+    function produce(ICommunity community,string calldata roleName) external returns(iStats);
 }
-interface Stats {
-    function updateStat(bytes32 tag) external;
-    function record(bytes32 tag, uint256 value) external;
-    function avgByTag(uint256 period, bytes32 tag) external view returns(uint256 avgValue);
-    function avgSumByAllTags(uint256 period) external view returns(uint256 avgValue);
-}
+
 
 contract SomeExternalMock {
      
     Factory factoryAddress;
-    Stats private statsAddr;
+    iStats private statsAddr;
     constructor(
         Factory addr,
         ICommunity community,
@@ -37,7 +33,7 @@ contract SomeExternalMock {
         string memory roleName
     ) 
         public 
-        returns(Stats) 
+        returns(iStats) 
     {
         return factoryAddress.produce(
             community,
@@ -45,7 +41,7 @@ contract SomeExternalMock {
         );
     }
     
-    function getStatsAddr() public view returns(Stats) {
+    function getStatsAddr() public view returns(iStats) {
         return statsAddr;
     }
     function push1_10_values(bytes32 tag) public {

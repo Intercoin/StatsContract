@@ -1,18 +1,13 @@
 pragma solidity >=0.6.0 <0.7.0;
 pragma experimental ABIEncoderV2;
 
-interface Stats {
-    function updateStat(bytes32 tag) external;
-    function record(bytes32 tag, uint256 value) external;
-    function avgByTag(uint256 period, bytes32 tag) external view returns(uint256 avgValue);
-    function avgSumByAllTags(uint256 period) external view returns(uint256 avgValue);
-}
+import "../interfaces/iStats.sol";
 
 contract SomeExternalMock2 {
      
     
-    Stats private statsAddr;
-    constructor(Stats addr) public {
+    iStats private statsAddr;
+    constructor(iStats addr) public {
         statsAddr = addr;
         
     }
