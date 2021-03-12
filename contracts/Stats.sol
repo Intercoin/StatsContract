@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.6.0 <0.7.0;
+pragma solidity >=0.7.0 <0.8.0;
+
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 import "./interfaces/ICommunity.sol";
 
-contract Stats is OwnableUpgradeSafe {
-    using SafeMath for uint256;
+contract Stats is OwnableUpgradeable {
+    using SafeMathUpgradeable for uint256;
     
     uint256[] internal periods;
     
@@ -63,6 +64,7 @@ contract Stats is OwnableUpgradeSafe {
     }
     
     modifier canSendStats() {
+
         bool s = false;
         string[] memory roles = ICommunity(communityAddress).getRoles(msg.sender);
         for (uint256 i=0; i< roles.length; i++) {
@@ -71,7 +73,7 @@ contract Stats is OwnableUpgradeSafe {
                 s = true;
             }
         }
-        
+      
         require(s == true, "Sender is not in whitelist");
         
         _;
@@ -94,7 +96,7 @@ contract Stats is OwnableUpgradeSafe {
         createTag(tag);
         
         data[dataIndex].value = value;
-        data[dataIndex].timestamp = now;
+        data[dataIndex].timestamp = block.timestamp;
         
         for(uint256 i=0; i<periods.length; i++) {
             updatePeriod(periods[i], tag, value);
@@ -112,6 +114,7 @@ contract Stats is OwnableUpgradeSafe {
             avgValue = stats[period][tag].total.div(stats[period][tag].count);
         }
     }
+    
     /**
      * @param period period in seconds enum(86400,604800,2592000,31536000) ie STATS_DAY,STATS_WEEK,STATS_MONTH,STATS_YEAR
      */
@@ -119,6 +122,14 @@ contract Stats is OwnableUpgradeSafe {
         for(uint256 i=1; i<tagsIndex; i++) {
             avgValue= avgValue.add(avgByTag(period,_tagsIndices[i]));
         }
+    }
+    
+    function allTags() public view returns(bytes32[] memory) {
+        bytes32[] memory ret = new bytes32[](tagsIndex-1);
+        for(uint256 i=1; i<tagsIndex; i++) {
+            ret[i-1]= _tagsIndices[i];
+        }
+        return ret;
     }
     /**
      * @param tag tagname
@@ -130,7 +141,7 @@ contract Stats is OwnableUpgradeSafe {
             uint256 key;
             key = stats[period][tag].oldestKey;
 
-            while (((now.sub(data[key].timestamp)) > period) && (key < (dataIndex))) {
+            while (((block.timestamp.sub(data[key].timestamp)) > period) && (key < (dataIndex))) {
 
                 stats[period][tag].total = stats[period][tag].total.sub(data[key].value);
                 stats[period][tag].count = stats[period][tag].count.sub(1);

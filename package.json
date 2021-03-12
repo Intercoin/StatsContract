@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/Intercoin/StatsContract#readme",
   "dependencies": {
-    "@openzeppelin/contracts-ethereum-package": "^3.0.0",
+    "@openzeppelin/contracts-upgradeable": "^3.4.0",
     "@openzeppelin/test-helpers": "^0.5.10",
     "@truffle/hdwallet-provider": "^1.2.1",
     "truffle-assertions": "^0.9.2",

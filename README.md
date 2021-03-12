@@ -41,6 +41,12 @@ once installed will be use methods:
 		<td>anyone</td>
 		<td>return average by all tags name and period</td>
 	</tr>
+	
+	<tr>
+		<td><a href="#alltags">allTags</a></td>
+		<td>anyone</td>
+		<td>return list of all tags name</td>
+	</tr>
 </tbody>
 </table>
 
@@ -48,6 +54,7 @@ once installed will be use methods:
 ## Methods
 
 #### init
+
 need to run after deploy
 
 Params:
@@ -57,6 +64,7 @@ community|address|address of community
 roleName|string|role name which specified to send stats data
 
 #### updateStat
+
 actualize stats if want not nothing to send
 
 Params:
@@ -65,7 +73,9 @@ name  | type | description
 tag|bytes32|tag name
 
 #### record
-send stats data 
+
+will send stats data 
+
 Params:
 name  | type | description
 --|--|--
@@ -75,7 +85,8 @@ price|uint256|price
 Note that all prices can be multiplied to some fraction to avoid zeros of integer type
 
 #### avgByTag
-return average by tag name and period
+
+will return average by tag name and period
 
 Params:
 name  | type | description
@@ -85,7 +96,18 @@ period|uint256| period in seconds enum(86400,604800,2592000,31536000) ie STATS_D
 
 #### avgSumByAllTags 
 
+will return average by all tags name
+
 Params:
 name  | type | description
 --|--|--
 period|uint256| period in seconds enum(86400,604800,2592000,31536000) ie STATS_DAY,STATS_WEEK,STATS_MONTH,STATS_YEAR
+
+#### allTags 
+
+will return list of all tags name
+
+Return params:
+name  | type | description
+--|--|--
+list|bytes32[]|list with tags name

@@ -1,4 +1,6 @@
-pragma solidity >=0.6.0 <0.7.0;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.7.0 <0.8.0;
+
 pragma experimental ABIEncoderV2;
 
 import "../Stats.sol";
@@ -14,6 +16,6 @@ contract StatsMock is Stats {
          return data[index];
      }
      function getNow(uint256 index) public view returns(uint256) {
-         return now;
+         return block.timestamp;
      }
 }
