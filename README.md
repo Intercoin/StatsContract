@@ -41,7 +41,6 @@ once installed will be use methods:
 		<td>anyone</td>
 		<td>return average by all tags name and period</td>
 	</tr>
-	
 	<tr>
 		<td><a href="#alltags">allTags</a></td>
 		<td>anyone</td>
