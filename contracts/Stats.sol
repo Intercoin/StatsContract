@@ -6,8 +6,9 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "./interfaces/ICommunity.sol";
+import "./IntercoinTrait.sol";
 
-contract Stats is OwnableUpgradeable {
+contract Stats is OwnableUpgradeable, IntercoinTrait {
     using SafeMathUpgradeable for uint256;
     
     uint256[] internal periods;
